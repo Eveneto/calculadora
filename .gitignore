@@ -1,0 +1,46 @@
+# Build directories
+build/
+debug/
+release/
+
+# Qt generated files
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+*.o
+*.so
+*.dll
+*.exe
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+Makefile*
+*build-*
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.cmake
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test executables
+test_calculator
+simple_test
+debug_calc
+
+# Backup files
+*.bak
+*.orig
