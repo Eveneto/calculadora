@@ -3,6 +3,9 @@ build/
 debug/
 release/
 
+# Mas manter dist/ para distribuição
+!dist/
+
 # Qt generated files
 *.pro.user
 *.pro.user.*

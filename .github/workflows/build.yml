@@ -1,0 +1,113 @@
+name: 🏗️ Build Multi-Platform
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+        target: 'desktop'
+        arch: 'win64_mingw'
+        
+    - name: 🔧 Configure CMake
+      run: cmake -B build -G "MinGW Makefiles"
+      
+    - name: 🏗️ Build
+      run: cmake --build build --config Release
+      
+    - name: 📦 Deploy Qt
+      run: |
+        mkdir deploy
+        copy build\calculadora.exe deploy\
+        windeployqt deploy\calculadora.exe
+        
+    - name: 📋 Create portable version
+      run: |
+        Compress-Archive -Path deploy\* -DestinationPath calculadora-windows-portable.zip
+        
+    - name: 🚀 Upload Windows artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: calculadora-windows
+        path: |
+          calculadora-windows-portable.zip
+          deploy/
+
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install qt6-base-dev qt6-tools-dev cmake build-essential
+        
+    - name: 🔧 Configure CMake
+      run: cmake -B build
+      
+    - name: 🏗️ Build
+      run: cmake --build build
+      
+    - name: 📦 Create AppImage (optional)
+      run: |
+        mkdir -p AppDir/usr/bin
+        cp build/calculadora AppDir/usr/bin/
+        # TODO: Add AppImage creation steps
+        
+    - name: 🚀 Upload Linux artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: calculadora-linux
+        path: build/calculadora
+
+  release:
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: 📥 Download artifacts
+      uses: actions/download-artifact@v4
+      
+    - name: 🎉 Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          calculadora-windows/calculadora-windows-portable.zip
+          calculadora-linux/calculadora
+        body: |
+          🎉 **Calculadora Qt C++ v${{ github.ref_name }}**
+          
+          ✨ **Funcionalidades:**
+          - Interface gráfica moderna
+          - Operações matemáticas básicas (+, -, ×, ÷)
+          - Histórico de operações
+          - Suporte completo a teclado
+          - Formatação brasileira de números
+          - Validação e tratamento de erros
+          
+          📦 **Downloads:**
+          - **Windows**: `calculadora-windows-portable.zip` (sem instalação)
+          - **Linux**: `calculadora` (executável)
+          
+          🔧 **Windows**: Apenas extrair e executar `calculadora.exe`
+          🐧 **Linux**: `chmod +x calculadora && ./calculadora`
+          
+        draft: false
+        prerelease: false
