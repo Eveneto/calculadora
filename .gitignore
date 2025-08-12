@@ -43,6 +43,7 @@ Thumbs.db
 test_calculator
 simple_test
 debug_calc
+functional_test
 
 # Backup files
 *.bak

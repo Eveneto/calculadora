@@ -39,18 +39,15 @@ if(WIN32)
     set_property(TARGET calculadora PROPERTY WIN32_EXECUTABLE TRUE)
 endif()
 
-# Testes
-add_executable(test_calculator 
-    test_calculator.cpp
-    src/Calculator.cpp
-    src/CalculatorHistory.cpp
-)
-target_link_libraries(test_calculator Qt6::Core Qt6::Widgets Qt6::Test)
+# Testes (opcionais - compilar apenas se solicitado)
+option(BUILD_TESTS "Build tests" OFF)
 
-# Teste simples
-add_executable(simple_test
-    simple_test.cpp
-    src/Calculator.cpp
-    src/CalculatorHistory.cpp
-)
-target_link_libraries(simple_test Qt6::Core Qt6::Widgets Qt6::Test)
+if(BUILD_TESTS)
+    # Teste simples funcional
+    add_executable(functional_test
+        functional_test.cpp
+        src/Calculator.cpp
+        src/CalculatorHistory.cpp
+    )
+    target_link_libraries(functional_test Qt6::Core Qt6::Widgets Qt6::Test)
+endif()
