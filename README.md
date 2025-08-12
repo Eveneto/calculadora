@@ -47,36 +47,50 @@ brew install qt@6 cmake
 
 ## 🔧 Compilação e Execução
 
-### 1. Clone ou navegue até o diretório do projeto
+### Método 1: Script Automático (Recomendado)
 
 ```bash
-cd /home/dev_pc/Documentos/calculadora
+# Clone do repositório (se necessário)
+git clone https://github.com/Eveneto/calculadora.git
+cd calculadora
+
+# Build automático
+./build-local.sh
 ```
 
-### 2. Crie o diretório de build
+### Método 2: Build Manual
 
 ```bash
-mkdir build
+# Criar diretório de build
+mkdir -p build
 cd build
-```
 
-### 3. Configure com CMake
+# Configurar com CMake
+cmake .. -DCMAKE_BUILD_TYPE=Release
 
-```bash
-cmake ..
-```
-
-### 4. Compile o projeto
-
-```bash
+# Compilar
 make -j$(nproc)
-```
 
-### 5. Execute a calculadora
-
-```bash
+# Executar
 ./calculadora
 ```
+
+### Método 3: Build Rápido (após primeiro build)
+
+```bash
+./build-quick.sh
+```
+
+## 📖 Guias de Build
+
+| Sistema | Guia |
+|---------|------|
+| Linux | [`BUILD_LOCAL_LINUX.md`](BUILD_LOCAL_LINUX.md) |
+| Windows | [`BUILD_WINDOWS_LOCAL.md`](BUILD_WINDOWS_LOCAL.md) |
+
+## ⬬ Downloads
+
+Para usuários finais que não querem compilar, veja [`DOWNLOAD.md`](DOWNLOAD.md).
 
 ## 🎯 Como Usar
 

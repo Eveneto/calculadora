@@ -1,0 +1,33 @@
+INFORMAÇÕES TÉCNICAS - Calculadora Qt C++
+=========================================
+
+📦 CONTEÚDO DO PACOTE:
+- calculadora           # Executável principal
+- libQt6*.so            # Bibliotecas Qt runtime
+- platforms/            # Plugins de plataforma Qt
+- imageformats/         # Plugins de imagem Qt (opcional)
+- run-calculadora.sh    # Script de execução
+- *.so                  # Outras dependências
+
+🔧 ESTRUTURA:
+Este é um pacote "portátil" que inclui todas as dependências
+necessárias para executar a calculadora sem instalação do Qt.
+
+📋 DEPENDÊNCIAS INCLUÍDAS:
+	libQt6Widgets.so.6 => /lib/x86_64-linux-gnu/libQt6Widgets.so.6 (0x00007c6254a00000)
+	libQt6Gui.so.6 => /lib/x86_64-linux-gnu/libQt6Gui.so.6 (0x00007c6254200000)
+	libQt6Core.so.6 => /lib/x86_64-linux-gnu/libQt6Core.so.6 (0x00007c6253c00000)
+	libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007c6253800000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007c62552ba000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007c6253400000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007c62551cf000)
+	libEGL.so.1 => /lib/x86_64-linux-gnu/libEGL.so.1 (0x00007c62551bd000)
+	libfontconfig.so.1 => /lib/x86_64-linux-gnu/libfontconfig.so.1 (0x00007c625516c000)
+	libX11.so.6 => /lib/x86_64-linux-gnu/libX11.so.6 (0x00007c6253ac3000)
+
+💾 TAMANHO TOTAL: ~23M
+
+🖥️ TESTADO EM:
+- Ubuntu 22.04/24.04
+- Sistema Linux x86_64
+- Qt 6.4.2
