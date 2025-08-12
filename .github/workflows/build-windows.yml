@@ -1,0 +1,132 @@
+name: 🪟 Build Windows Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+      
+    - name: 🔧 Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        setup-python: 'false'
+        
+    - name: 🔨 Configure CMake
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF
+      
+    - name: 🏗️ Build
+      run: cmake --build build --config Release --target calculadora
+      
+    - name: � Verify build
+      shell: pwsh
+      run: |
+        Write-Host "=== Verificando arquivos de build ==="
+        if (Test-Path "build\Release\calculadora.exe") {
+          Write-Host "✅ calculadora.exe encontrado"
+          Get-Item "build\Release\calculadora.exe" | Format-Table Name, Length
+        } else {
+          Write-Host "❌ calculadora.exe NÃO encontrado"
+          Get-ChildItem -Path "build" -Recurse -Filter "*.exe" | Format-Table
+          exit 1
+        }
+      
+    - name: �📦 Prepare distribution
+      shell: pwsh
+      run: |
+        # Criar diretório deploy
+        New-Item -ItemType Directory -Force -Path "deploy"
+        
+        # Copiar executável
+        Copy-Item "build\Release\calculadora.exe" "deploy\"
+        
+        # Configurar windeployqt com caminhos corretos
+        $env:PATH = "$env:Qt6_DIR\bin;$env:PATH"
+        
+        Write-Host "Usando windeployqt do PATH"
+        Write-Host "Qt6_DIR: $env:Qt6_DIR"
+        
+        # Executar windeployqt
+        windeployqt --release --no-translations --no-system-d3d-compiler --force "deploy\calculadora.exe"
+        
+    - name: 📋 Create release info
+      shell: pwsh
+      run: |
+        $content = @"
+        Calculadora Qt C++ v1.0.1
+        
+        Como usar:
+        1. Extraia todos os arquivos
+        2. Execute calculadora.exe
+        3. Nao precisa instalar nada!
+        
+        Funcionalidades:
+        - Interface grafica moderna
+        - Operacoes matematicas basicas (+, -, x, /)
+        - Historico de operacoes clicavel
+        - Suporte completo a teclado
+        - Formatacao brasileira de numeros (1.000,50)
+        - Validacao e tratamento de erros
+        
+        Repositorio: https://github.com/Eveneto/calculadora
+        "@
+        $content | Out-File -FilePath "deploy\README.txt" -Encoding UTF8
+        
+    - name: 📄 Create LICENSE
+      shell: pwsh
+      run: |
+        $license = @"
+        MIT License
+        
+        Copyright (c) 2025 Eveneto
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        "@
+        $license | Out-File -FilePath "deploy\LICENSE.txt" -Encoding UTF8
+        
+    - name: 🗜️ Create ZIP
+      shell: pwsh
+      run: |
+        Compress-Archive -Path "deploy\*" -DestinationPath "calculadora-windows-x64.zip"
+        
+    - name: 📊 List files
+      shell: pwsh
+      run: |
+        Write-Host "=== Arquivos no deploy ==="
+        Get-ChildItem -Path "deploy" -Recurse | Format-Table Name, Length
+        Write-Host "=== Tamanho do ZIP ==="
+        Get-Item "calculadora-windows-x64.zip" | Format-Table Name, Length
+        
+    - name: 🚀 Upload release
+      uses: actions/upload-artifact@v3
+      with:
+        name: calculadora-windows-x64
+        path: calculadora-windows-x64.zip
